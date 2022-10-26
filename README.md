@@ -14,8 +14,7 @@ These installation steps follow the contents of included [mjpg-streamer-install.
 1. Update the system
    ```shell
    sudo apt-get update
-   sudo apt-get dist-upgrade
-   sudo rpi-update
+   sudo apt-get dist-upgrade -y
    ```
 2. Install required dependencies
    ```shell
@@ -27,14 +26,15 @@ These installation steps follow the contents of included [mjpg-streamer-install.
    git clone https://github.com/jacksonliam/mjpg-streamer.git
    cd mjpg-streamer/mjpg-streamer-experimental
    ```
-4. build the mjpg-streamer project
+4. Patch the setup files to configure mjpg-streamer to use Raspberry Pi camera
    ```shell
-   make
-   ```
-5. Patch the setup files to configure mjpg-streamer to use Raspberry Pi camera
-   ```shell
+   sed -i 's/\/opt\/vc\/include/\/usr\/include/g' plugins/input_raspicam/CMakeLists.txt
    sed -i '/ExecStart/c\ExecStart=/usr/bin/mjpg_streamer -i "input_raspicam.so -x 400 -y 300 -fps 30" -o "output_http.so -w /usr/share/mjpg_streamer/www -p 8000"' mjpg_streamer@.service
    sed -i '/install -D mjpg_streamer@.service/c\install -D mjpg_streamer@.service _pkg/etc/systemd/system/mjpg_streamer.service' makedeb.sh
+   ```
+5. build the mjpg-streamer project
+   ```shell
+   make
    ```
 6. create debian package
    ```shell
